@@ -200,6 +200,7 @@ class EasyGCPz:
         print(self.log)
 
     # -------- core query processing methods --------
+
     def query(self,
               queries,
               return_format='dict',
@@ -519,6 +520,7 @@ class EasyGCPz:
             return results
 
     # -------- class support methods --------
+
     @staticmethod
     def _query_inputs_validate(queries,
                                return_ascii,
@@ -685,6 +687,7 @@ class EasyGCPz:
         return all_queries
 
     # -------- logging methods --------
+
     @property
     def log(self):
         """Quick way to return the instance's execution log directly."""
@@ -797,37 +800,9 @@ class EasyGCPzQueryError(EasyGCPzException):
 
 if __name__ == '__main__':
 
-
-    test_query_1 = 'select * from expenses.monthlyexpenses'
-    test_query_2 = ['select colname from expenses.monthlyexpenses '
-                    'where _price between iterate_between and iterate_between',
-                    'select colname from expenses.monthlyexpenses '
-                    'where _price between iterate_between and iterate_between']
-    test_connection = 'test-proj-mw-os'
-    test_json = 'C:/Users/m/Desktop/test-proj-mw-os-dcd92f7919b1.json'
-
-    tmp = EasyGCPz(test_json, test_connection)
-
-    # rr = tmp(queries=test_query, return_format='dataframea', return_ascii='True', connection_json=test_json)
-
-
-    aa = tmp.query(test_query_2[0],
-             colname=['_price', '_price', '_price', 'name', 'name'],
-             iterate_between=[-1000, -500, -100, -0.01, 0.01, 100],
-             file_same=r"C:\Users\m\Desktop\testrunsep.txt",
-             return_format='dict_series',
-             return_ascii=True)
-    print(aa)
-    po_ = r"C:\Users\m\Desktop\EasyGCPz\testdump\testlogdump.txt"
-    tmp.save_log(po_)
-    # with tmp as t:
-    #     print(t())
-    print('Getttiting log: ', str(tmp.log))#, tmp.connection)
-    print('hiiiii')
-
-    # eof
     print(f'Running EasyGCPz directly from file: '
           f'{pathlib.Path(__file__).as_posix()}')
+
     # for command line usage
     with EasyGCPz(sys.argv[0], sys.argv[1], verbose=True) as tmp:
         if len(sys.argv) <= 7:

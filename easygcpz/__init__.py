@@ -14,4 +14,6 @@ __date__ = '2024.03'
 
 from .main import EasyGCPz as easygcpz
 
-__all__ = ["easygcpz"]
+__all__ = ["easygcpz", '__author__', '__version__', '__date__']
+
+# eof
