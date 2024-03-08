@@ -80,11 +80,14 @@ EasyGCPz comes with several features that streamline GCP usage in python.
 When creating an instance there are two required inputs and one optional one. Elaborating on the example query above
 
 ```
-new_instance = easygcpz(connection_json=json_path, connection_project=project_name, Verbose=True)
+new_instance = easygcpz(
+    connection_json=json_path, 
+    connection_project=project_name, 
+    verbose=True)
 ```
 - The `connection_json` argument contains the path to the [.json file that GCP provides you.](https://stackoverflow.com/questions/46287267/how-can-i-get-the-file-service-account-json-for-google-translate-api). 
-- The `connection_json` argument contains the [project name associated with the account](https://stackoverflow.com/questions/24682180/how-to-get-project-id-in-google-cloud-storage)
-- The `Verbose` argument prints out the log to the console in real time, as it is being written, when set to True. Setting this to False make it run 'silently', but the log is still available upon request. 
+- The `connection_project` argument contains the [project name associated with the account](https://stackoverflow.com/questions/24682180/how-to-get-project-id-in-google-cloud-storage)
+- The `verbose` argument prints out the log to the console in real time, as it is being written, when set to True. Setting this to False make it run 'silently', but the log is still available upon request. 
 
 ### Running queries. 
 
@@ -141,7 +144,10 @@ results = new_instance.query(queries=*my_query*, **ReplaceMeHere**=*replacement_
 In this way EasyGCPz adapts to your conventions and does not force you to adapt to any format. The follow example subsections will be demonstrated with the EasyGCPz instance we made above in the examples above.
 
 ```
-new_instance = easygcpz(connection_json=json_path, connection_project=project_name, Verbose=True)
+new_instance = easygcpz(
+                   connection_json=json_path, 
+                   connection_project=project_name, 
+                   verbose=True)
 ```
 
 #### Iterating query based on one iterable
@@ -149,19 +155,27 @@ new_instance = easygcpz(connection_json=json_path, connection_project=project_na
 Lets say you have an example query in python and you want to run it on multiple tables
 
 ```
-example_query = 'SELECT * FROM my_example_table_list'
+example_query = \
+"""
+SELECT * FROM my_example_table_list
+"""
 ```
 
-In this case you can specify the iterable my_example_table_list as a list of table names here: 
+In this case you can specify the iterable *my_example_table_list* as a list of table names here: 
 
 ```
-table_list = ['MyCoolTable', 'MyKindaCoolTable', 'MyReallyCoolTable', 'MySuperCoolTable']
+table_list = ['MyCoolTable', 
+              'MyKindaCoolTable', 
+              'MyReallyCoolTable', 
+              'MySuperCoolTable']
 ```
 
 Now all we have to do is feed both of these into the query call. To let EasyGCPz know that on what substring you would like your iterables to be placed into, you can specify that substring into the query call itself. 
 
 ```
-query_output = new_instance.query(queries=example_query, my_example_table_list=table_list)
+query_output = new_instance.query(
+                   queries=example_query, 
+                   my_example_table_list=table_list)
 ```
 
 This EasyGCPz call will find the my_example_table_list substring in the example_query string, and make 4 copies of it and replace that substring with the list it was provided with in each copy. The 4 corresponding queries that were executed in the following order are: 
@@ -177,7 +191,11 @@ Sometimes we need to have every permutation of a query executed where there mult
 Lets say that we need to select two different columns (Score & Time), but we need both columns in both float and integer types. We can specify EasyGCPz to take care of this with a nested list of lists
 
 ```
-example_query = 'SELECT *, CAST (nested_iterable_example AS nested_iterable_example)'
+example_query = \
+    """
+    SELECT *, 
+    CAST (nested_iterable_example AS nested_iterable_example)
+    """
 ```
 
 To iterate through all permutations we can specify a nested list of lists
@@ -188,7 +206,9 @@ nested_list = [['Score', 'Time'], ['float', 'int']]
 
 By calling this in the .query() method call:
 ```
-query_output = new_instance.query(queries=example_query, nested_iterable_example=nested_list)
+query_output = new_instance.query(
+                   queries=example_query, 
+                   nested_iterable_example=nested_list)
 ```
 
 EasyGCPz is effectively executing the following four queries: 
@@ -202,7 +222,11 @@ EasyGCPz is effectively executing the following four queries:
 EasyGCPz only retains one reserved keyword argument for the query call, and that is the **iterate_between** keyword. When this keyword shows up in the .query() method call it looks for **'iterate_between'** in the query for a particular type of replacement. Lets say that we need to iterate a query between 4 different weeks, week 1 of 2020, to week 4 of 2020. The iterate_between keyword can take care of this intrinsically. 
 
 ```
-example_query = 'SELECT * FROM MyCoolTable WHERE Time BETWEEN iterate_between and iterate_between'
+example_query = \
+"""
+SELECT * FROM MyCoolTable 
+WHERE Time BETWEEN iterate_between and iterate_between
+"""
 ```
 
 To generate the ranges between all four weeks we specify the five dates that mark the stand and end of all of the weeks
@@ -213,7 +237,9 @@ date_list = ['2020-01-01', '2020-01-08', '2020-01-15', '2020-01-22', '2020-01-29
 
 By calling this in the .query() method call:
 ```
-query_output = new_instance.query(queries=example_query, iterate_between=date_list)
+query_output = new_instance.query(
+                   queries=example_query, 
+                   iterate_between=date_list)
 ```
 
 *iterate_between* places its substring matches in the order that they appear in the query. If there are multiple things that need to be iterated between the *iterate_between* supports any number of nested lists (list of any number of lists) to work through all iterations as demonstrated in the subsection below.
@@ -232,8 +258,16 @@ Here are two example query-like strings
 
 ```
 query_list = [
-'QUERY 1 TEXT: nested_iter | nested_iter | iter_1 | iter_2 | iterate_between | iterate_between | iterate_between | iterate_between' ,
-'QUERY 2 TEXT: iterate_between | iter_1 | nested_iter | iterate_between | iter_2 | nested_iter | iterate_between | iterate_between ]
+    """
+    QUERY 1 TEXT: nested_iter | nested_iter | iter_1 | iter_2 |
+     iterate_between | iterate_between | iterate_between | iterate_between
+    """,
+
+    """
+    QUERY 2 TEXT: iterate_between | iter_1 | nested_iter | iterate_between |
+     iter_2 | nested_iter | iterate_between | iterate_between
+    """
+    ]
 ```
 
 Here are the four iterables that we need to specify for the substring matches
@@ -243,7 +277,8 @@ Here are the four iterables that we need to specify for the substring matches
 nested_iterable_ex = [[1 , 2], [3, 4]]
 iterable_1_ex = ['a', 'b', 'c', 'd']
 iterable_2_ex = ['A', 'B', 'C', 'D']
-iterate_between_ex = [['i', 'ii', 'iii', 'iv', 'v'], ['I', 'II', 'III', 'IV', 'V']]
+iterate_between_ex = [['i', 'ii', 'iii', 'iv', 'v'], 
+                      ['I', 'II', 'III', 'IV', 'V']]
 ```
 
 By calling this in the .query() method call:
@@ -279,7 +314,8 @@ example_query = 'Iterated query test: nested_iter | nested_iter | iter_1 | iter_
 nested_iterable_ex = [[1 , 2], [3, 4]]
 iterable_1_ex = ['a', 'b', 'c', 'd']
 iterable_2_ex = ['A', 'B', 'C', 'D']
-iterate_between_ex = [['i', 'ii', 'iii', 'iv', 'v'], ['I', 'II', 'III', 'IV', 'V']] 
+iterate_between_ex = [['i', 'ii', 'iii', 'iv', 'v'], 
+                      ['I', 'II', 'III', 'IV', 'V']] 
 
 # lets see the queries that would be generated from this, without executing them
 query_strings = new_instance.iterated_query(
@@ -302,9 +338,17 @@ print(query_strings)
 With strict requirements around the GCP console, query size, local memory limitations, or other bandwidth issues it might be necessary to parse out a large amount of downloaded query data into multiple queries. Let's demonstrate how EasyGCPz handles this and then break down all of the arguments present. Using our existing EasyGCPz instance, *new_instance*, from the examples above lets look at how this works:
 
 ```
-example_query = 'SELECT * FROM MyCoolTable WHERE Time BETWEEN iterate_between and iterate_between'
+example_query = \
+    """
+    SELECT * FROM MyCoolTable 
+    WHERE Time BETWEEN iterate_between and iterate_between
+    """
 
-months_list = ['2020-01-01', '2020-01-02', '2020-01-03', '2020-01-04', '2020-01-05', '2020-01-06', '2020-01-07', '2020-01-08', '2020-01-09', '2020-01-10', '2020-01-11', '2020-01-12', '2021-01-01']
+months_list = ['2020-01-01', '2020-01-02', '2020-01-03', 
+               '2020-01-04', '2020-01-05', '2020-01-06', 
+               '2020-01-07', '2020-01-08', '2020-01-09', 
+               '2020-01-10', '2020-01-11', '2020-01-12', 
+               '2021-01-01']
 
 results_file_path = '~/path/to/results_file.csv'
 
@@ -358,6 +402,7 @@ Current planned updates include features for:
 ## Contributing
 
 If you find a bug, [please feel free to report it!](https://github.com/mw-os/EasyGCPz/issues/new?assignees=&labels=bug).
+
 If you have additional ideas that you would like to see in EasyGCPz, [please request them!](https://github.com/mw-os/EasyGCPz/issues/new?assignees=&labels=enhancement).
 
 eof
