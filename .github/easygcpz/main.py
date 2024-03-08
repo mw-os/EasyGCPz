@@ -263,12 +263,11 @@ class EasyGCPz:
                                     return_ascii=return_ascii,
                                     return_format=return_format,
                                     file_same=file_same,
-                                    file_separate=file_separate)
+                                    file_separate=file_separate,
+                                    kwargs=kwargs)
 
         # if kwargs is not empty then develop multiple queries
         if kwargs != {}:
-
-
             # generate the iterated queries for a single incoming query
             if isinstance(queries, (str, int, float, complex)):
                 queries = self.iterated_query(queries, **kwargs)
@@ -526,7 +525,7 @@ class EasyGCPz:
                                return_format,
                                file_same,
                                file_separate,
-                               **kwargs):
+                               kwargs):
         """Validate incoming user provided arguements and notify user
             of issues. Provides strong-like type checking and verification
             that specific arguements are expected by the program
@@ -610,10 +609,11 @@ class EasyGCPz:
                                f'be of string type, but {i} was found '
                                f'to be of {type(i)} type.']
         for i in kwargs.values():
-            if not isinstance(i, (str, int, float, complex)):
-                issue_list += [f'provided keyword argument values must '
-                               f'be of string type, but {i} was found '
-                               f'to be of {type(i)} type.']
+            for j in i:
+                if not isinstance(j, (str, int, float, complex)):
+                    issue_list += [f'provided keyword argument values must '
+                                   f'be of string type, but {j} was found '
+                                   f'to be of {type(j)} type.']
 
         # raise formatted exception if any issues exist
         if len(issue_list) > 0:
@@ -796,6 +796,36 @@ class EasyGCPzQueryError(EasyGCPzException):
 
 
 if __name__ == '__main__':
+
+
+    test_query_1 = 'select * from expenses.monthlyexpenses'
+    test_query_2 = ['select colname from expenses.monthlyexpenses '
+                    'where _price between iterate_between and iterate_between',
+                    'select colname from expenses.monthlyexpenses '
+                    'where _price between iterate_between and iterate_between']
+    test_connection = 'test-proj-mw-os'
+    test_json = 'C:/Users/m/Desktop/test-proj-mw-os-dcd92f7919b1.json'
+
+    tmp = EasyGCPz(test_json, test_connection)
+
+    # rr = tmp(queries=test_query, return_format='dataframea', return_ascii='True', connection_json=test_json)
+
+
+    aa = tmp.query(test_query_2[0],
+             colname=['_price', '_price', '_price', 'name', 'name'],
+             iterate_between=[-1000, -500, -100, -0.01, 0.01, 100],
+             file_same=r"C:\Users\m\Desktop\testrunsep.txt",
+             return_format='dict_series',
+             return_ascii=True)
+    print(aa)
+    po_ = r"C:\Users\m\Desktop\EasyGCPz\testdump\testlogdump.txt"
+    tmp.save_log(po_)
+    # with tmp as t:
+    #     print(t())
+    print('Getttiting log: ', str(tmp.log))#, tmp.connection)
+    print('hiiiii')
+
+    # eof
     print(f'Running EasyGCPz directly from file: '
           f'{pathlib.Path(__file__).as_posix()}')
     # for command line usage
