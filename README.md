@@ -25,13 +25,13 @@ EasyGCPz comes with several features that streamline GCP usage in python.
     With the ability to have queried data delivered to you in any combination of pandas, numpy, standard python, or google bigquery data structures, the ability to have a familiar data structure is on hand with a single command.
 
 4. Fixed type formatting does away with whatever complications the database formatting throws at you.
-    Sometimes when we query a database we want the formatted object types that are already there (like _datetime_, _Decimal_, or _char_ objects for example). Other times all we want is the data as we see it without any of the special formatting. By setting one simple variable you can ensure that the outputs of a query only come back as letters _(strings)_ and numbers _(floats)_.
+    Sometimes when we query a database we want the formatted object types that are already there (like *datetime*, *Decimal*, or *char* objects for example). Other times all we want is the data as we see it without any of the special formatting. By setting one simple variable you can ensure that the outputs of a query only come back as letters _(strings)_ and numbers _(floats)_.
 
 5. Easily auditable querying is now local, with automatic logging working in the background.
     For your own sake, or for the sake of your collaborators, it is essential to know what exact actions are taken at what exact times when it comes to database management and auditable exercises. With a _hands-off_ approach to logging, this system works in the background of a local session and instantly records the metadata of all actions that EasyGCPz undertakes.
 
 6. Saving data has never been easier.
-    Iterating over multiple queries, saving the outputs, and remembering which files belong to which queries can be a lot to take care of. Luckily EsayGCPz handles all of this for you in the supported two ways that it can save your results for you. The first way saves data to separate files and takes care of all the indexing, the second way writes all of the data over multiple queries into the same file so that the outputs from multiple queries can be saved together. In both cases the executed queries are automatically saved with the outputs, in separate files, so that you can always keep track of which data belongs to which queries. 
+    Iterating over multiple queries, saving the outputs, and remembering which files belong to which queries can be a lot to take care of. Luckily EasyGCPz handles all of this for you in the supported two ways that it can save your results for you. The first way saves data to separate files and takes care of all the indexing, the second way writes all of the data over multiple queries into the same file so that the outputs from multiple queries can be saved together. In both cases the executed queries are automatically saved with the outputs, in separate files, so that you can always keep track of which data belongs to which queries. 
 
 7. Changing connection information during the same session.
     When working on large scale operations there is often the need to switch the connection information on the fly, but this can be a huge hassle to write code that does this at the appropriate points. EasyGCPz can flexibly handle new connection information when entering a new query, making it easy to switch connections at any time or explicitly linking specific queries to specific connections at runtime. 
@@ -85,8 +85,8 @@ new_instance = easygcpz(
     connection_project=project_name, 
     verbose=True)
 ```
-- The `connection_json` argument contains the path to the [.json file that GCP provides you.](https://stackoverflow.com/questions/46287267/how-can-i-get-the-file-service-account-json-for-google-translate-api). 
-- The `connection_project` argument contains the [project name associated with the account](https://stackoverflow.com/questions/24682180/how-to-get-project-id-in-google-cloud-storage)
+- The `connection_json` argument contains the path to the [.json file that GCP provides you.](https://stackoverflow.com/questions/46287267/how-can-i-get-the-file-service-account-json-for-google-translate-api)
+- The `connection_project` argument contains the [project name associated with the account.](https://stackoverflow.com/questions/24682180/how-to-get-project-id-in-google-cloud-storage)
 - The `verbose` argument prints out the log to the console in real time, as it is being written, when set to True. Setting this to False make it run 'silently', but the log is still available upon request. 
 
 ### Running queries. 
@@ -138,8 +138,10 @@ results = new_instance.query(
 There are three primary ways that EasyGCPz supports the automatic generation of queries. To demonstrate how each of them works we will start with an example query, show how to call the function, and then show the resulting queries. The general format is that the name of the argument that you specify should be the matching element to replace in a query as demonstrated here: 
 
 *my_query* = 'Select * from **ReplaceMeHere**'
-*replacement_list* = ['table_1', 'table_2', ..., 'table_n']
-results = new_instance.query(queries=*my_query*, **ReplaceMeHere**=*replacement_list*)
+
+**replacement_list** = ['table_1', 'table_2', ..., 'table_n']
+
+results = new_instance.query(queries=*my_query*, **ReplaceMeHere**=**replacement_list**)
 
 In this way EasyGCPz adapts to your conventions and does not force you to adapt to any format. The follow example subsections will be demonstrated with the EasyGCPz instance we made above in the examples above.
 
@@ -188,7 +190,7 @@ This EasyGCPz call will find the my_example_table_list substring in the example_
 #### Iterating query based on nested iterables
 
 Sometimes we need to have every permutation of a query executed where there multiple parts. EasyGCPz takes care of this in a similar way as it did in the single iterable example above.
-Lets say that we need to select two different columns (Score & Time), but we need both columns in both float and integer types. We can specify EasyGCPz to take care of this with a nested list of lists
+Let's say that we need to select two different columns (Score & Time), but we need both columns in both float and integer types. We can specify EasyGCPz to take care of this with a nested list of lists
 
 ```
 example_query = \
@@ -229,7 +231,7 @@ WHERE Time BETWEEN iterate_between and iterate_between
 """
 ```
 
-To generate the ranges between all four weeks we specify the five dates that mark the stand and end of all of the weeks
+To generate the ranges between all four weeks we specify the five dates that mark the stand and end of all the weeks
 
 ```
 date_list = ['2020-01-01', '2020-01-08', '2020-01-15', '2020-01-22', '2020-01-29']
@@ -301,7 +303,7 @@ We are dynamically generating and executing the following 8 queries!
 7. `'QUERY 2 TEXT: iii | c | 2 | iv | C | 3 | III | IV' `
 8. `'QUERY 2 TEXT: iv | d | 2 | v | D | 4 | IV | V' `
 
-The `queries` argument can support any number of queries to be ran. If there is a substring replacement keyword that is specified then EasyGCPz will attempt to perform these replacements in all of the queries provided in that list. If there are no substring replacement keywords specified then the provided query list is executed in the respective order.  
+The `queries` argument can support any number of queries to be ran. If there is a substring replacement keyword that is specified then EasyGCPz will attempt to perform these replacements in all the queries provided in that list. If there are no substring replacement keywords specified then the provided query list is executed in the respective order.  
 
 ### Checking iterated queries before running
 The **iterated_query** method is what performs the iteration of a query when executing an iterated query, this method is also available directly to you to see exactly the iterated queries that EasyGCPz is generating. This is great for confirmation before executing, or if you just want to use this functionality to generate new queries to share. Note: the **iterated_query** method only takes in one query at a time. Using our existing EasyGCPz instance, *new_instance*, from the examples above lets look at how this works:
@@ -359,7 +361,7 @@ query_output = new_instance.query(
               	   iterate_between=months_list)
 ```
 
-This example query call generates one query for every month of data using all of the dates in the *iterate_between* keyword. It downloads each month's data one at a time and appends it into the file in the *file_same* argument. By setting the *return_format* argument to 'none' the downloaded data is not returned to the python environment, thus reducing the memory foot print of the program after each month of data is saved. To verify this we can examine the resulting *query_output* variable: 
+This example query call generates one query for every month of data using all the dates in the *iterate_between* keyword. It downloads each month's data one at a time and appends it into the file in the *file_same* argument. By setting the *return_format* argument to 'none' the downloaded data is not returned to the python environment, thus reducing the memory foot print of the program after each month of data is saved. To verify this we can examine the resulting *query_output* variable: 
 
 ```
 print(query_output)
@@ -396,13 +398,13 @@ Current planned updates include features for:
 - Uploading .csv files straight to a database table
 - Expanded ability to handle more types of dynamic query iterations
 - Further options for output data structures
-- Multithreaded queries to be ran simultaneously
+- Multithreaded queries to be run simultaneously
 - Support for concurrent i/o processes
 
 ## Contributing
 
-If you find a bug, [please feel free to report it!](https://github.com/mw-os/EasyGCPz/issues/new?assignees=&labels=bug).
+If you find a bug, [please feel free to report it!](https://github.com/mw-os/EasyGCPz/issues/new?assignees=&labels=bug)
 
-If you have additional ideas that you would like to see in EasyGCPz, [please request them!](https://github.com/mw-os/EasyGCPz/issues/new?assignees=&labels=enhancement).
+If you have additional ideas that you would like to see in EasyGCPz, [please request them!](https://github.com/mw-os/EasyGCPz/issues/new?assignees=&labels=enhancement)
 
 eof

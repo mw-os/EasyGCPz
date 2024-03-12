@@ -418,14 +418,14 @@ class EasyGCPz:
             # else it exists and write without headers
             if os.path.isfile(file_same):
                 with open(file_same, 'a+t', newline='') as f:
-                    # convert from column centric data to column centric
+                    # convert from column centric data to row centric
                     csv.writer(f).writerows(
                         list(map(list, zip(*list(results.values())))))
             else:
                 # add headers back and transpose to for file column format
                 with open(file_same, 'a+t', newline='') as f:
                     # add header and convert from column centric data
-                    # to column centric
+                    # to row centric
                     csv.writer(f).writerows(
                         [list(results.keys())] +
                         list(map(list, zip(*list(results.values())))))
@@ -434,14 +434,16 @@ class EasyGCPz:
             file_same_query = f'{os.path.splitext(file_same)[0]}_QUERY_.txt'
             self.log = f'APPENDING RESPECTIVE QUERY TO: {file_same_query}'
             with open(file_same_query, 'a+t') as f:
-                f.write(f'{self._get_ts()} \n \n{query_in} \n \n')
+                f.write(f'{os.getlogin()} has executed the following '
+                        f'EasyGCPz query at {self._get_ts()}: \n \n'
+                        f'{query_in} \n \n')
 
-        # save data into new file if it is specified
+        # ---- save data into new file if it is specified ----
         if file_separate != '':
             self.log = f'WRITING OUTPUT TO: {file_separate}'
             with open(file_separate, 'w+', newline='') as f:
                 # add header and convert from column centric data to
-                # column centric
+                # row centric
                 csv.writer(f).writerows(
                     [list(results.keys())] +
                     list(map(list, zip(*list(results.values())))))
@@ -451,9 +453,12 @@ class EasyGCPz:
                 f'{os.path.splitext(file_separate)[0]}_QUERY_.txt'
             self.log = f'WRITING RESPECTIVE QUERY TO: {file_separate_query}'
             with open(file_separate_query, 'w+') as f:
-                f.write(f'{self._get_ts()} \n \n{query_in} \n \n')
+                f.write(f'{os.getlogin()} has executed the following '
+                        f'EasyGCPz query at {self._get_ts()}: \n \n'
+                        f'{query_in} \n \n')
 
         # ---- return the data in the desired format ----
+
         # -- pythonic --
 
         if return_format == 'dict':
@@ -564,7 +569,7 @@ class EasyGCPz:
             pass
         elif isinstance(queries, (list, tuple)):
             if not (all(isinstance(i, (str, int, float, complex))
-                       for i in queries)):
+                        for i in queries)):
                 issue_list += [f'All queries must be of str, int, or float '
                                f'type, but the following types were received:'
                                f' {", ".join(type(i) for i in queries)}']
@@ -817,10 +822,14 @@ if __name__ == '__main__':
                       len(sys.argv) >= 7 else '')
         else:
             # build incoming kwargs dict from every other element
+            # get list of kwargs
             kwargs_l = sys.argv[7:]
-            kwargs_k = [i for i in kwargs_l if i % 2 == 0]
-            kwargs_v = [i for i in kwargs_l if i % 2 == 1]
+            # build out kwargs keys and values lists
+            kwargs_k = [i[1] for i in enumerate(kwargs_l) if i[0] % 2 == 0]
+            kwargs_v = [i[1] for i in enumerate(kwargs_l) if i[0] % 2 == 1]
+            # reconstruct a kwargs dict
             dict_ = {kwargs_k[i]: kwargs_v[i] for i in range(len(kwargs_k))}
+            # run query
             tmp.query(queries=sys.argv[2],
                       return_format=sys.argv[3],
                       return_ascii=bool(sys.argv[4]),

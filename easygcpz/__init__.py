@@ -9,11 +9,11 @@ problems.
 """
 
 __author__ = 'MW-OS'
-__version__ = '0.1.0'
+__version__ = '0.1.1'
 __date__ = '2024.03'
 
 from .main import EasyGCPz as easygcpz
 
-__all__ = ["easygcpz", '__author__', '__version__', '__date__']
+__all__ = ["easygcpz", '__version__',]
 
 # eof
